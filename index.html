@@ -1,1 +1,544 @@
-# mungith-al-tabha
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مُنقذ الطبخة 🍳</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    color: #292524;
+    min-height: 100vh;
+    transition: 0.3s;
+}
+
+body.dark {
+    background: #18181b;
+    color: #f4f4f5;
+}
+
+header {
+    text-align: center;
+    padding: 35px 15px 20px;
+}
+
+header h1 {
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: #78716c;
+}
+
+.dark header p {
+    color: #a1a1aa;
+}
+
+.container {
+    max-width: 850px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.dark .card {
+    background: #27272a;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin: 15px 0 8px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #e7e5e4;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    background: white;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+    background: #18181b;
+    color: white;
+    border-color: #3f3f46;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #f97316;
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+.analyze {
+    width: 100%;
+    background: #f97316;
+    color: white;
+    margin-top: 20px;
+}
+
+.analyze:hover {
+    background: #ea580c;
+}
+
+.dark-btn {
+    background: #292524;
+    color: white;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+}
+
+.result {
+    display: none;
+}
+
+.problem {
+    background: #fff7ed;
+    border-right: 5px solid #f97316;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.dark .problem {
+    background: #3f2a1f;
+}
+
+.solution {
+    background: #f0fdf4;
+    border-right: 5px solid #22c55e;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+.dark .solution {
+    background: #143321;
+}
+
+.reason {
+    background: #eff6ff;
+    border-right: 5px solid #3b82f6;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+.dark .reason {
+    background: #172554;
+}
+
+.solution h3,
+.reason h3,
+.problem h3 {
+    margin-bottom: 8px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.retry {
+    background: #22c55e;
+    color: white;
+}
+
+.save {
+    background: #3b82f6;
+    color: white;
+}
+
+.clear {
+    background: #ef4444;
+    color: white;
+}
+
+.history {
+    display: none;
+}
+
+.history-item {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.dark .history-item {
+    border-color: #444;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #78716c;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 28px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .actions button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<button class="dark-btn" onclick="toggleDark()">🌙</button>
+
+<header>
+    <h1>🍳 مُنقذ الطبخة</h1>
+    <p>احكيلي شو صار بأكلتك وأنا أحاول أساعدك تصلحها!</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <label>🍽️ شو الأكلة؟</label>
+        <input id="food" placeholder="مثلاً: كيكة فانيلا">
+
+        <label>📝 شو عملت؟</label>
+        <textarea id="recipe"
+        placeholder="اكتب باختصار كيف حضرت الأكلة والمكونات المهمة..."></textarea>
+
+        <label>⚠️ شو المشكلة اللي صارت؟</label>
+        <textarea id="problem"
+        placeholder="مثلاً: الكيكة هبطت من النص وطلعت ثقيلة"></textarea>
+
+        <label>🔥 طريقة الطبخ</label>
+        <select id="method">
+            <option value="oven">الفرن</option>
+            <option value="pan">المقلاة</option>
+            <option value="boil">السلق</option>
+            <option value="fry">القلي</option>
+            <option value="other">طريقة أخرى</option>
+        </select>
+
+        <button class="analyze" onclick="analyzeFood()">
+            🔍 حلّل المشكلة
+        </button>
+
+    </div>
+
+    <div class="card result" id="result">
+
+        <h2>🔎 نتيجة التحليل</h2>
+
+        <div class="problem">
+            <h3>⚠️ المشكلة</h3>
+            <p id="problemResult"></p>
+        </div>
+
+        <div class="reason">
+            <h3>🧠 أسباب محتملة</h3>
+            <p id="reasonResult"></p>
+        </div>
+
+        <div class="solution">
+            <h3>💡 الحلول المقترحة</h3>
+            <p id="solutionResult"></p>
+        </div>
+
+        <div class="actions">
+            <button class="retry" onclick="retry()">🔄 أجربها مرة ثانية</button>
+            <button class="save" onclick="saveResult()">💾 حفظ النتيجة</button>
+            <button class="clear" onclick="clearResult()">🗑️ مسح</button>
+        </div>
+
+    </div>
+
+    <div class="card history" id="history">
+
+        <h2>📚 تجاربي السابقة</h2>
+
+        <div id="historyList"></div>
+
+    </div>
+
+</div>
+
+<footer>
+    🍳 مُنقذ الطبخة — جرّب، تعلّم، وحسّن طبختك!
+</footer>
+
+
+<script>
+
+let currentResult = {};
+
+function analyzeFood() {
+
+    const food = document.getElementById("food").value.trim();
+    const recipe = document.getElementById("recipe").value.trim();
+    const problem = document.getElementById("problem").value.trim();
+    const method = document.getElementById("method").value;
+
+    if (!food || !problem) {
+        alert("اكتب اسم الأكلة والمشكلة أولاً 🙂");
+        return;
+    }
+
+    let reasons = [];
+    let solutions = [];
+
+    const text = (food + " " + recipe + " " + problem).toLowerCase();
+
+    /* مشاكل الكيك */
+
+    if (
+        text.includes("هبط") ||
+        text.includes("منخفض") ||
+        text.includes("نزل")
+    ) {
+        reasons.push("فتح باب الفرن مبكراً قد يسبب هبوط الكيك.");
+        reasons.push("قد تكون كمية البيكنج باودر أو البيكنج صودا غير مناسبة.");
+        reasons.push("إخراج الكيك قبل اكتمال النضج قد يجعله يهبط.");
+
+        solutions.push("لا تفتح الفرن خلال أول 20–25 دقيقة.");
+        solutions.push("تأكد من دقة كمية المواد الرافعة.");
+        solutions.push("اختبر النضج بعود خشبي قبل إخراج الكيك.");
+    }
+
+    /* مشكلة الجفاف */
+
+    if (
+        text.includes("ناشف") ||
+        text.includes("جاف") ||
+        text.includes("يابس")
+    ) {
+        reasons.push("قد تكون مدة الطبخ طويلة.");
+        reasons.push("درجة الحرارة ربما كانت مرتفعة.");
+        reasons.push("قد تكون كمية السوائل قليلة.");
+
+        solutions.push("قلل مدة الطبخ قليلاً في المرة القادمة.");
+        solutions.push("جرّب درجة حرارة أقل.");
+        solutions.push("راجع كمية الحليب أو الماء أو الزيت حسب الوصفة.");
+    }
+
+    /* مشكلة الملح */
+
+    if (
+        text.includes("مالح") ||
+        text.includes("ملح كثير") ||
+        text.includes("زيادة الملح")
+    ) {
+        reasons.push("تمت إضافة كمية ملح أكبر من المطلوب.");
+
+        solutions.push("إذا كانت الوصفة تسمح، أضف كمية إضافية من المكونات غير المالحة.");
+        solutions.push("في الشوربات والصلصات يمكن زيادة كمية السائل أو المكونات الأساسية.");
+    }
+
+    /* مشكلة الحرق */
+
+    if (
+        text.includes("محروق") ||
+        text.includes("حرق") ||
+        text.includes("احترق")
+    ) {
+        reasons.push("درجة الحرارة قد تكون مرتفعة.");
+        reasons.push("قد تكون الأكلة بقيت في الفرن أو على النار فترة أطول من اللازم.");
+
+        solutions.push("خفّض درجة الحرارة قليلاً.");
+        solutions.push("استخدم مؤقتاً أثناء الطبخ.");
+        solutions.push("راقب الأكلة في الدقائق الأخيرة.");
+    }
+
+    /* مشكلة العجين */
+
+    if (
+        text.includes("عجين") ||
+        text.includes("ما استوى") ||
+        text.includes("نيء")
+    ) {
+        reasons.push("قد يكون وقت الطبخ غير كافٍ.");
+        reasons.push("درجة الحرارة قد تكون منخفضة.");
+        reasons.push("قد تكون سماكة الخليط أو العجين كبيرة.");
+
+        solutions.push("أعطه وقتاً إضافياً مع مراقبته.");
+        solutions.push("تأكد من وصول الفرن إلى درجة الحرارة المطلوبة.");
+        solutions.push("تجنب جعل طبقة العجين سميكة جداً.");
+    }
+
+    /* مشكلة الطعم */
+
+    if (reasons.length === 0) {
+
+        reasons.push("قد تكون المشكلة مرتبطة بنسبة المكونات.");
+        reasons.push("درجة الحرارة ومدة الطبخ قد تؤثران على النتيجة.");
+        reasons.push("طريقة الخلط أو ترتيب إضافة المكونات قد يكون له تأثير.");
+
+        solutions.push("راجع الوصفة وقارن الكميات التي استخدمتها.");
+        solutions.push("جرّب تغيير عامل واحد فقط في المرة القادمة.");
+        solutions.push("سجّل النتيجة حتى تعرف أي تعديل نجح.");
+    }
+
+    currentResult = {
+        food: food,
+        recipe: recipe,
+        problem: problem,
+        reasons: reasons,
+        solutions: solutions
+    };
+
+    document.getElementById("problemResult").innerText = problem;
+
+    document.getElementById("reasonResult").innerHTML =
+        reasons.map(x => "• " + x).join("<br>");
+
+    document.getElementById("solutionResult").innerHTML =
+        solutions.map(x => "• " + x).join("<br>");
+
+    document.getElementById("result").style.display = "block";
+
+    window.scrollTo({
+        top: document.getElementById("result").offsetTop - 20,
+        behavior: "smooth"
+    });
+}
+
+
+function retry() {
+
+    alert(
+        "🔄 ممتاز!\n\n" +
+        "غيّر سبباً واحداً فقط في المرة القادمة، " +
+        "ثم سجّل النتيجة حتى تعرف إذا نجح الحل."
+    );
+}
+
+
+function saveResult() {
+
+    let history =
+        JSON.parse(localStorage.getItem("foodHistory")) || [];
+
+    history.unshift(currentResult);
+
+    localStorage.setItem(
+        "foodHistory",
+        JSON.stringify(history)
+    );
+
+    showHistory();
+
+    alert("✅ تم حفظ التجربة!");
+}
+
+
+function showHistory() {
+
+    let history =
+        JSON.parse(localStorage.getItem("foodHistory")) || [];
+
+    const box = document.getElementById("history");
+    const list = document.getElementById("historyList");
+
+    if (history.length === 0) {
+        box.style.display = "none";
+        return;
+    }
+
+    box.style.display = "block";
+
+    list.innerHTML = history.map((item, index) => {
+
+        return `
+            <div class="history-item">
+                <strong>🍽️ ${item.food}</strong>
+                <br>
+                ⚠️ ${item.problem}
+                <br><br>
+                💡 ${item.solutions[0] || "لا يوجد حل"}
+            </div>
+        `;
+
+    }).join("");
+}
+
+
+function clearResult() {
+
+    document.getElementById("result").style.display = "none";
+
+    document.getElementById("food").value = "";
+    document.getElementById("recipe").value = "";
+    document.getElementById("problem").value = "";
+}
+
+
+function toggleDark() {
+
+    document.body.classList.toggle("dark");
+
+    localStorage.setItem(
+        "darkMode",
+        document.body.classList.contains("dark")
+    );
+}
+
+
+if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
+}
+
+showHistory();
+
+</script>
+
+</body>
+  </html>
